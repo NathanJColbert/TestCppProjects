@@ -21,3 +21,6 @@ chrono::now() needs C++11
  The time sampling is definitely off (most likley because I am writing to a file)
       -Tested with cygwin time and it was consistently 10ms off or so
       -This should not be disastrous because if your file is running too slow... You'll know :)
+
+EXAMPLES:
+   The examples directory has a micro use of the program. Try using it by doing -> testprogram.exe -t testfiles -f linesegment.cpp
