@@ -2,17 +2,20 @@
 WINDOWS ONLY (I think)
 
 ## HOW TO:
-1) Compile the program, something like -> 
+1) Compile the program
 ```console 
-g++ testprogram.cpp -o testprogram" 
+g++ testprogram.cpp -o testprogram
 ```
 OR 
 ```constole
 gcc testprogram.cpp -lstdc++ -o testBinary.exe
 ```
-2) Run the program with the correct environment variables -> testprogram.exe -f moosick/moosick.cpp -t moosick/testfiles.
+2) Run the program with the correct environment variables
+```console 
+testprogram.exe -f examples/linesegment.cpp -t examples/testfiles.
+```
    - Side note: You can compile your .cpp/.cxx OR just run the .exe/.out directly.
-3) You should get an output that ends with "TESTS ENDED WITH A RESULT OF...".
+3) The console will log the output test results of each .in/.out files
 
 ## NOTES:
 - I use "system()" to run a shell and whatnot. This is a solo tool so system() should be fine here.
@@ -27,8 +30,7 @@ gcc testprogram.cpp -lstdc++ -o testBinary.exe
    - Tested with cygwin time and it was consistently 10ms off or so. This should not be disastrous because if your file is running too slow... You'll know :)
 
 ## EXAMPLES:
-The examples directory has a micro use of the program.
-- Try using it by doing ->
+The examples directory has a micro use of the program. Enter the directory in your console and run it:
 ```console
 testprogram.exe -t testfiles -f linesegment.cpp
 ```
