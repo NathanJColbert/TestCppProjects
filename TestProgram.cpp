@@ -1,28 +1,3 @@
-// NATHAN COLBERT
-// WINDOWS ONLY (I think)
-//
-// NOTES:
-// I use "system()" to run a shell and whatnot.
-//      -This is a solo tool so system() should be fine here
-// Log console (your program) in the RESULT_FILE directory.
-//      -Change RESULT_FILE to change the output directory
-// The program will compare your output file to the test file output (1-x.out).
-// Uses g++ as the compiler. 
-//      -Change the COMPILER_COMMAND_LINE to reference a different command line compiler.
-//
-// HOW TO:
-// 1) Compile the program, something like -> "g++ testprogram.cpp -o testprogram" OR "gcc testprogram.cpp -lstdc++ -o testBinary.exe"
-// 2) Run the program with the correct environment variables -> testprogram.exe -f moosick/moosick.cpp -t moosick/testfiles
-//      -Side note: You can compile your .cpp/.cxx OR just run the .exe/.out directly
-// 3) You should get an output that ends with "TESTS ENDED WITH A RESULT OF..."
-//
-// SOME OTHER STUFF:
-// There are const strings at the top of this file that can be edited to change compiler settings and outputs
-// chrono::now() needs C++11
-// The time sampling is definitely off (most likley because I am writing to a file)
-//      -Tested with cygwin time and it was consistently 10ms off or so
-//      -This should not be disastrous because if your file is running too slow... You'll know :)
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -35,6 +10,7 @@
 const std::string RESULT_FILE = "result.txt";
 const char COMPILER_COMMAND_LINE[] = "g++";
 const char COMPILER_COMMAND_LINE_ARGUMENT[] = ""; // -lstdc++" to link std if you are using gcc or some weird compiler. Add a space before the argument (I'm lazy)
+const char FRONT_LINE_ARGUMENT[] = "./";
 //
 
 // Testing Files
@@ -124,11 +100,14 @@ void testFiles(const std::string& binaryFile, const std::string& testfilesLocati
     std::chrono::milliseconds totalTime;
     for (const auto & entry : std::filesystem::directory_iterator(testfilesLocation)) {
         if (strcmp(entry.path().extension().c_str(), ".in") != 0) continue;
-        std::string command = binaryFile;
+        std::string command = FRONT_LINE_ARGUMENT + binaryFile;
         command += std::string(" < ");
         std::string testPath = entry.path().string();
         command += testPath;
         command = removeEOF(command);
+
+        std::cout << "\n-----------------------------------------------------------\n";
+        std::cout << "RUNNING -> " << command.c_str() << '\n';
 
         coutTxt();
         auto start = std::chrono::high_resolution_clock::now();
@@ -144,7 +123,6 @@ void testFiles(const std::string& binaryFile, const std::string& testfilesLocati
         testPathOut.pop_back();
         testPathOut += ".out";
         testPathOut = removeEOF(testPathOut);
-        std::cout << "\n-----------------------------------------------------------\n";
         std::cout << "TESTING: \"" << testPath << "\"\n";
         CompareResult result = compareFiles(RESULT_FILE, testPathOut);
         std::cout << "RESULT: ";
@@ -166,25 +144,14 @@ void testFiles(const std::string& binaryFile, const std::string& testfilesLocati
 //
 
 // Compile File
-std::string removeLastDir(const std::string& s) {
-    std::string output = s;
-    while (output.size() >= 1) {
-        if (output[output.size() - 1] == '\\' || output[output.size() - 1] == '/')
-            break;
-        output.pop_back();
-    }
-    return output;
-}
 std::string compileFile(const std::string& cppFile) {
-    std::string binaryDir = removeLastDir(cppFile);
-    binaryDir += "testBinary.exe";
-    binaryDir = removeEOF(binaryDir);
+    std::string binaryDir = "testbinary";
     std::string command = COMPILER_COMMAND_LINE;
     command += " " + cppFile + COMPILER_COMMAND_LINE_ARGUMENT + " -o " + binaryDir;
     command = removeEOF(command);
     int result = system(command.c_str());
     if (result != 0) return "";
-    return removeEOF(binaryDir);
+    return binaryDir;
 }
 //
 
@@ -239,6 +206,11 @@ int main(int argc, char* argv[]) {
     }
     if (hasExtention(fileName, ".cpp") || hasExtention(fileName, ".cxx")) {
         fileName = compileFile(fileName);
+        if (fileName == "") {
+            std::cout << INVALID_INPUT;
+            std::cout << "\t*Failed to compile file properly.\n";
+            return -1;
+        }
         testFiles(fileName, testFileDirectory);
         return 0;
     }
