@@ -7,7 +7,7 @@ WINDOWS ONLY (I think)
 g++ testprogram.cpp -o testprogram
 ```
 OR 
-```constole
+```console
 gcc testprogram.cpp -lstdc++ -o testBinary.exe
 ```
 2) Run the program with the correct environment variables
